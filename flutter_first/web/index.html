@@ -1,257 +1,257 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
-
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
-
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="flutter_first">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>flutter_first</title>
-  <link rel="manifest" href="manifest.json">
-  
-  <!-- Добавляем мета-теги для камеры -->
+  <meta name="description" content="Family Video Chat">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="handheld-friendly" content="true">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   
+  <title>Семейный видеочат</title>
+  <link rel="manifest" href="manifest.json">
+  
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #000;
-      overflow: hidden;
-    }
-    #loading {
+    body { margin: 0; padding: 0; background: #000; font-family: Arial, sans-serif; }
+    #diagnostic-panel {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      font-family: Arial, sans-serif;
-      z-index: 1000;
-    }
-    .loading-content {
-      text-align: center;
-    }
-    .spinner {
-      width: 50px;
-      height: 50px;
-      border: 5px solid #ffffff;
-      border-top: 5px solid transparent;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 20px auto;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    .permission-message {
-      background: rgba(255, 255, 255, 0.2);
-      padding: 15px;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      background: rgba(0,0,0,0.9);
+      color: #0f0;
+      padding: 20px;
       border-radius: 10px;
-      margin: 20px;
-      font-size: 14px;
+      font-family: monospace;
+      font-size: 12px;
+      z-index: 10000;
+      max-height: 300px;
+      overflow-y: auto;
+      display: none;
+      border: 1px solid #0f0;
+    }
+    .device-item {
+      padding: 5px;
+      margin: 5px 0;
+      border-left: 3px solid #0f0;
+    }
+    .device-item.video { border-left-color: #00f; }
+    .device-item.audio { border-left-color: #ff0; }
+    .device-item.error { border-left-color: #f00; color: #f00; }
+    .btn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    #permission-status {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
     }
   </style>
 </head>
 <body>
-  <!-- Экран загрузки -->
-  <div id="loading">
-    <div class="loading-content">
-      <div class="spinner"></div>
-      <h2>Загрузка приложения...</h2>
-      <div id="permission-status" class="permission-message" style="display: none;">
-        Запрос доступа к камере и микрофону...
-      </div>
-    </div>
+  <!-- Панель диагностики -->
+  <div id="diagnostic-panel">
+    <h3>🔧 Диагностика устройств</h3>
+    <div id="diagnostic-content">Загрузка...</div>
+    <button class="btn" onclick="runDiagnostics()">🔄 Запустить диагностику</button>
+    <button class="btn" onclick="hideDiagnostics()">✖️ Закрыть</button>
   </div>
 
+  <!-- Кнопка для открытия диагностики -->
+  <button onclick="showDiagnostics()" style="position:fixed; top:10px; left:10px; z-index:9999; background:#007bff; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">
+    🔧 Диагностика
+  </button>
+
   <script src="flutter_bootstrap.js" async></script>
-  
-  <!-- Скрываем экран загрузки после загрузки Flutter -->
+
   <script>
-    window.addEventListener('load', function() {
-      setTimeout(function() {
-        document.getElementById('loading').style.display = 'none';
-      }, 2000);
+    // Показать панель диагностики
+    function showDiagnostics() {
+      document.getElementById('diagnostic-panel').style.display = 'block';
+      runDiagnostics();
+    }
+    
+    function hideDiagnostics() {
+      document.getElementById('diagnostic-panel').style.display = 'none';
+    }
+
+    // Функция диагностики
+    async function runDiagnostics() {
+      const content = document.getElementById('diagnostic-content');
+      content.innerHTML = '🔍 Проверка устройств...\n';
+      
+      try {
+        // 1. Проверка поддержки браузера
+        content.innerHTML += '\n📋 Информация о браузере:\n';
+        content.innerHTML += `User Agent: ${navigator.userAgent}\n`;
+        content.innerHTML += `Платформа: ${navigator.platform}\n`;
+        content.innerHTML += `Язык: ${navigator.language}\n`;
+        
+        // 2. Проверка поддержки mediaDevices
+        content.innerHTML += '\n🎥 Проверка mediaDevices:\n';
+        if (navigator.mediaDevices) {
+          content.innerHTML += '✅ mediaDevices поддерживается\n';
+          
+          // 3. Проверка разрешений
+          if (navigator.permissions) {
+            content.innerHTML += '\n🔐 Статус разрешений:\n';
+            try {
+              const cameraPermission = await navigator.permissions.query({ name: 'camera' });
+              content.innerHTML += `Камера: ${cameraPermission.state}\n`;
+            } catch (e) {
+              content.innerHTML += `Камера: ошибка проверки - ${e.message}\n`;
+            }
+            
+            try {
+              const micPermission = await navigator.permissions.query({ name: 'microphone' });
+              content.innerHTML += `Микрофон: ${micPermission.state}\n`;
+            } catch (e) {
+              content.innerHTML += `Микрофон: ошибка проверки - ${e.message}\n`;
+            }
+          }
+          
+          // 4. Получение списка устройств
+          content.innerHTML += '\n📷 Доступные устройства:\n';
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          
+          if (devices.length === 0) {
+            content.innerHTML += '❌ Нет доступных устройств\n';
+          } else {
+            let videoCount = 0;
+            let audioCount = 0;
+            
+            devices.forEach((device, index) => {
+              const icon = device.kind === 'videoinput' ? '📹' : 
+                          device.kind === 'audioinput' ? '🎤' : '🔊';
+              const label = device.label || '❓ Неизвестное устройство (без разрешений)';
+              
+              content.innerHTML += `${icon} [${device.kind}] ${label}\n`;
+              if (device.kind === 'videoinput') videoCount++;
+              if (device.kind === 'audioinput') audioCount++;
+            });
+            
+            content.innerHTML += `\n📊 Статистика:\n`;
+            content.innerHTML += `Видеокамер: ${videoCount}\n`;
+            content.innerHTML += `Микрофонов: ${audioCount}\n`;
+          }
+          
+          // 5. Тестовый запрос доступа
+          content.innerHTML += '\n🔄 Тестовый запрос доступа:\n';
+          
+          if (videoCount === 0 && audioCount === 0) {
+            content.innerHTML += '❌ Нет устройств для запроса\n';
+          } else {
+            try {
+              const constraints = {};
+              if (videoCount > 0) constraints.video = true;
+              if (audioCount > 0) constraints.audio = true;
+              
+              content.innerHTML += `Запрос с параметрами: ${JSON.stringify(constraints)}\n`;
+              
+              const stream = await navigator.mediaDevices.getUserMedia(constraints);
+              content.innerHTML += '✅ Доступ получен!\n';
+              
+              stream.getTracks().forEach(track => {
+                content.innerHTML += `  - Трек ${track.kind}: ${track.enabled}\n`;
+                track.stop();
+              });
+            } catch (err) {
+              content.innerHTML += `❌ Ошибка доступа: ${err.name} - ${err.message}\n`;
+              
+              // Детальная диагностика ошибки
+              switch(err.name) {
+                case 'NotFoundError':
+                case 'DevicesNotFoundError':
+                  content.innerHTML += '\n🔍 РЕШЕНИЕ: Устройства не найдены.\n';
+                  content.innerHTML += '1. Проверьте подключение камеры/микрофона\n';
+                  content.innerHTML += '2. Убедитесь, что драйверы установлены\n';
+                  content.innerHTML += '3. Проверьте настройки конфиденциальности Windows\n';
+                  content.innerHTML += '4. Перезагрузите компьютер\n';
+                  break;
+                  
+                case 'NotAllowedError':
+                case 'PermissionDeniedError':
+                  content.innerHTML += '\n🔍 РЕШЕНИЕ: Доступ запрещен.\n';
+                  content.innerHTML += '1. Нажмите на значок замка в адресной строке\n';
+                  content.innerHTML += '2. Разрешите доступ к камере и микрофону\n';
+                  content.innerHTML += '3. Перезагрузите страницу\n';
+                  break;
+                  
+                case 'NotReadableError':
+                  content.innerHTML += '\n🔍 РЕШЕНИЕ: Устройство занято.\n';
+                  content.innerHTML += '1. Закройте другие приложения (Zoom, Skype, Discord)\n';
+                  content.innerHTML += '2. Перезагрузите компьютер\n';
+                  break;
+              }
+            }
+          }
+        } else {
+          content.innerHTML += '❌ mediaDevices не поддерживается\n';
+          content.innerHTML += 'Используйте современный браузер: Chrome, Firefox, Edge\n';
+        }
+      } catch (e) {
+        content.innerHTML += `❌ Ошибка диагностики: ${e.message}\n`;
+      }
+    }
+
+    // Автоматическая диагностика при загрузке
+    window.addEventListener('load', () => {
+      console.log('Page loaded, running diagnostics...');
+      setTimeout(() => {
+        // Не показываем автоматически, но логируем в консоль
+        runDiagnostics().catch(console.error);
+      }, 1000);
+    });
+
+    // Обработка ошибок медиа
+    window.addEventListener('error', (event) => {
+      if (event.message && event.message.includes('getUserMedia')) {
+        console.error('Media error caught:', event.message);
+      }
     });
   </script>
 
-  <!-- Скрипт для запроса разрешений -->
+  <!-- Простой запрос разрешений -->
   <script>
     (function() {
-      console.log('Checking media devices support...');
+      console.log('Checking media devices...');
       
-      // Показываем статус
-      const permissionStatus = document.getElementById('permission-status');
-      
-      // Проверяем поддержку getUserMedia
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        console.log('✅ getUserMedia supported');
-        
-        // Проверяем, есть ли уже разрешения
-        navigator.permissions.query({ name: 'camera' })
-          .then(function(permissionStatus) {
-            console.log('Camera permission state:', permissionStatus.state);
+      // Проверяем устройства при загрузке
+      if (navigator.mediaDevices) {
+        navigator.mediaDevices.enumerateDevices()
+          .then(devices => {
+            console.log('Available devices:');
+            devices.forEach(device => {
+              console.log(`- ${device.kind}: ${device.label || 'unnamed'}`);
+            });
             
-            if (permissionStatus.state === 'granted') {
-              console.log('✅ Camera permission already granted');
-            } else if (permissionStatus.state === 'prompt') {
-              console.log('⏳ Camera permission will be requested');
-            } else if (permissionStatus.state === 'denied') {
-              console.log('❌ Camera permission denied');
+            const hasVideo = devices.some(d => d.kind === 'videoinput');
+            const hasAudio = devices.some(d => d.kind === 'audioinput');
+            
+            if (!hasVideo && !hasAudio) {
+              alert('❌ Не найдено ни одного устройства!\n\n' +
+                    'Проверьте:\n' +
+                    '1. Подключена ли камера/микрофон\n' +
+                    '2. Установлены ли драйверы\n' +
+                    '3. Не заблокирован ли доступ в браузере');
+            } else if (!hasVideo) {
+              alert('⚠️ Камера не найдена. Вы сможете только слушать.');
+            } else if (!hasAudio) {
+              alert('⚠️ Микрофон не найден. Вы сможете только смотреть.');
             }
           })
-          .catch(function(err) {
-            console.log('Permissions API not supported fully:', err);
+          .catch(err => {
+            console.error('Error enumerating devices:', err);
           });
-        
-        // Для iOS Safari и других браузеров - запрашиваем разрешения
-        if (permissionStatus) {
-          permissionStatus.style.display = 'block';
-        }
-        
-        // Запрашиваем доступ к камере и микрофону
-        navigator.mediaDevices.getUserMedia({ 
-          video: true, 
-          audio: true 
-        })
-        .then(function(stream) {
-          console.log('✅ Media permissions granted');
-          if (permissionStatus) {
-            permissionStatus.innerHTML = '✅ Доступ к камере и микрофону получен';
-            permissionStatus.style.backgroundColor = 'rgba(0, 255, 0, 0.2)';
-          }
-          
-          // Останавливаем треки, чтобы не расходовать ресурсы
-          stream.getTracks().forEach(track => {
-            track.stop();
-            console.log(`Track ${track.kind} stopped`);
-          });
-        })
-        .catch(function(err) {
-          console.log('❌ Media permissions error:', err.name, err.message);
-          
-          let errorMessage = '';
-          switch(err.name) {
-            case 'NotAllowedError':
-            case 'PermissionDeniedError':
-              errorMessage = '❌ Доступ запрещен. Пожалуйста, разрешите доступ к камере и микрофону в настройках браузера.';
-              break;
-            case 'NotFoundError':
-            case 'DevicesNotFoundError':
-              errorMessage = '❌ Камера или микрофон не найдены. Подключите устройства и перезагрузите страницу.';
-              break;
-            case 'NotReadableError':
-            case 'TrackStartError':
-              errorMessage = '❌ Не удалось получить доступ к устройствам. Возможно, они уже используются другим приложением.';
-              break;
-            case 'OverconstrainedError':
-            case 'ConstraintNotSatisfiedError':
-              errorMessage = '❌ Устройства не поддерживают требуемые параметры.';
-              break;
-            case 'TypeError':
-              errorMessage = '❌ Ошибка типов. Возможно, браузер не поддерживается.';
-              break;
-            default:
-              errorMessage = `❌ Ошибка: ${err.message || 'Неизвестная ошибка'}`;
-          }
-          
-          if (permissionStatus) {
-            permissionStatus.innerHTML = errorMessage;
-            permissionStatus.style.backgroundColor = 'rgba(255, 0, 0, 0.2)';
-          }
-          
-          // Показываем детальную информацию в консоли
-          console.log('Error details:', {
-            name: err.name,
-            message: err.message,
-            constraint: err.constraint,
-            stack: err.stack
-          });
-        });
-      } else {
-        console.log('❌ getUserMedia not supported');
-        alert('❌ Ваш браузер не поддерживает доступ к камере и микрофону. Пожалуйста, используйте современный браузер: Chrome, Firefox, Edge или Safari.');
       }
     })();
-  </script>
-
-  <!-- Дополнительный скрипт для мобильных устройств -->
-  <script>
-    // Проверяем, что это мобильное устройство
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-      console.log('Mobile device detected');
-      
-      // Для iOS добавляем специальную обработку
-      if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-        console.log('iOS device detected');
-        
-        // Создаем кнопку для запроса разрешений (iOS требует пользовательского жеста)
-        const loadingDiv = document.getElementById('loading');
-        const buttonContainer = document.createElement('div');
-        buttonContainer.style.marginTop = '20px';
-        
-        const requestButton = document.createElement('button');
-        requestButton.textContent = 'Разрешить доступ к камере';
-        requestButton.style.padding = '15px 30px';
-        requestButton.style.fontSize = '18px';
-        requestButton.style.backgroundColor = '#4CAF50';
-        requestButton.style.color = 'white';
-        requestButton.style.border = 'none';
-        requestButton.style.borderRadius = '10px';
-        requestButton.style.cursor = 'pointer';
-        
-        requestButton.onclick = function() {
-          navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-            .then(function(stream) {
-              console.log('iOS permissions granted');
-              stream.getTracks().forEach(track => track.stop());
-              requestButton.style.backgroundColor = '#45a049';
-              requestButton.textContent = '✅ Доступ получен';
-              requestButton.disabled = true;
-            })
-            .catch(function(err) {
-              console.log('iOS permissions error:', err);
-              requestButton.style.backgroundColor = '#f44336';
-              requestButton.textContent = '❌ Ошибка доступа';
-            });
-        };
-        
-        buttonContainer.appendChild(requestButton);
-        loadingDiv.querySelector('.loading-content').appendChild(buttonContainer);
-      }
-    }
   </script>
 </body>
 </html>
