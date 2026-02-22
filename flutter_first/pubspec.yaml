@@ -35,6 +35,18 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
+    # WebRTC для Flutter
+  
+  # Для управления состоянием
+  provider: ^6.0.5
+  
+  # Для нативного выбора устройств
+  permission_handler: ^12.0.1
+  
+  # Для работы с сетью
+  web_socket_channel: ^3.0.3
+  flutter_webrtc: ^1.3.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
