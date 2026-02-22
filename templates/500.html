@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 — Внутренняя ошибка сервера</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at 20% 20%, #1a1a27, #0d0d14 70%);
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        .glow {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,80,120,0.45), transparent 70%);
+            filter: blur(80px);
+            animation: move 12s infinite alternate ease-in-out;
+        }
+
+        .glow:nth-child(1) { top: -100px; left: -120px; }
+        .glow:nth-child(2) {
+            bottom: -140px;
+            right: -80px;
+            background: radial-gradient(circle, rgba(0,150,255,0.45), transparent 70%);
+            animation-delay: 3s;
+        }
+
+        @keyframes move {
+            0% { transform: translate(0,0); }
+            100% { transform: translate(60px, -40px); }
+        }
+
+        .card {
+            position: relative;
+            padding: 50px 60px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 30px;
+            backdrop-filter: blur(25px);
+            box-shadow: 0 0 60px rgba(0, 0, 0, 0.45);
+            text-align: center;
+            animation: fadeIn 1.2s ease forwards, float 5s ease-in-out infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+            100% { transform: translateY(0); }
+        }
+
+        .error {
+            font-size: 6.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff5078, #ffb347);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -3px;
+        }
+
+        .text {
+            font-size: 1.35rem;
+            opacity: 0.88;
+            margin-top: 10px;
+        }
+
+        .joke {
+            margin-top: 18px;
+            font-size: 1.1rem;
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+        .btn-row {
+            margin-top: 32px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 32px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: 0.25s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff5078, #ffb347);
+            color: #fff;
+            box-shadow: 0 0 25px rgba(255,80,120,0.45);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.06);
+            color: #ffffffc9;
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.04);
+            box-shadow: 0 0 35px rgba(255,80,120,0.7);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.12);
+        }
+
+        @media (max-width: 600px) {
+            .card { padding: 35px 26px; }
+            .error { font-size: 4.5rem; }
+            .text { font-size: 1.15rem; }
+            .btn { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="glow"></div>
+    <div class="glow"></div>
+
+    <div class="card">
+        <h1 class="error">500</h1>
+        <p class="text">Что‑то сломалось на нашей стороне. Мессенджер немного приуныл.</p>
+        <p class="joke" id="joke"></p>
+
+        <div class="btn-row">
+            <a href="/" class="btn btn-primary">Вернуться в мессенджер</a>
+            <a href="javascript:location.reload()" class="btn btn-secondary">Попробовать ещё раз</a>
+        </div>
+    </div>
+
+    <script>
+        const jokes = [
+            "Сервер ушёл за кофе и забыл вернуться.",
+            "Мы всё починим… как только перестанем паниковать.",
+            "Сервер перегрелся от количества ваших сообщений.",
+            "Внутренняя ошибка: кто‑то отправил слишком мощный мем.",
+            "Мессенджер завис, как старый ноутбук — но мы его уже перезагружаем.",
+            "Ошибка 500: сервер решил взять выходной без предупреждения."
+        ];
+
+        document.getElementById("joke").textContent =
+            jokes[Math.floor(Math.random() * jokes.length)];
+    </script>
+
+</body>
+</html>
