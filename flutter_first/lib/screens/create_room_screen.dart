@@ -35,7 +35,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
 
     try {
       // Подключаемся к сигнальному серверу
-      await _signalingService.connect('ws://localhost:8080');
+      await _signalingService.connect('ws://212.57.115.62:8080');
       
       // Создаем комнату
       _signalingService.onMessage = (data) {

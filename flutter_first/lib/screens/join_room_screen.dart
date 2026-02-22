@@ -43,7 +43,7 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
 
     try {
       // Подключаемся к сигнальному серверу
-      await _signalingService.connect('ws://ваш-сервер:8080');
+      await _signalingService.connect('ws://212.57.115.62:8080');
       
       _signalingService.onMessage = (data) {
         if (data['type'] == 'room_joined') {
