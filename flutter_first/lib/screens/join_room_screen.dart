@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/signaling_service.dart';
-import 'video_call_screen.dart';  // Добавляем этот импорт
+import 'video_call_screen.dart'; // Добавляем этот импорт
 
 class JoinRoomScreen extends StatefulWidget {
   const JoinRoomScreen({super.key});
@@ -43,8 +43,8 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
 
     try {
       // Подключаемся к сигнальному серверу
-      await _signalingService.connect('ws://ваш-сервер:8080');
-      
+      await _signalingService.connect('ws://212.57.115.62:8080');
+
       _signalingService.onMessage = (data) {
         if (data['type'] == 'room_joined') {
           // Успешно присоединились, начинаем звонок
@@ -62,7 +62,7 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
           setState(() {
             _isJoining = false;
           });
-          
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(data['message'] ?? 'Ошибка подключения')),
           );
@@ -74,12 +74,11 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
         'type': 'join_room',
         'roomId': _roomIdController.text.toUpperCase(),
       });
-      
     } catch (e) {
       setState(() {
         _isJoining = false;
       });
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Ошибка подключения: $e')),
       );
