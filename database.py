@@ -1,4 +1,4 @@
-from models import db, User, Message
+from models import db, User, Call
 import os
 
 def init_db(app):
