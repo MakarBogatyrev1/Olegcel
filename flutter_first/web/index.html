@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Камера</title>
+</head>
+<body>
+    <h1>Тест камеры</h1>
+    <video id="video" autoplay style="width:100%; max-width:640px;"></video>
+    <br>
+    <button onclick="start()">Включить</button>
+    <button onclick="stop()">Выключить</button>
+
+    <script>
+        let stream;
+        
+        async function start() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+                document.getElementById('video').srcObject = stream;
+                console.log('Камера работает!');
+            } catch(e) {
+                alert('Ошибка: ' + e.message);
+            }
+        }
+        
+        function stop() {
+            if(stream) {
+                stream.getTracks().forEach(t => t.stop());
+                document.getElementById('video').srcObject = null;
+            }
+        }
+    </script>
+</body>
+</html>
